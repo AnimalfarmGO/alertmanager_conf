@@ -1,0 +1,39 @@
+# Для изменения статус-кода сайта lms.skillfactory.ru:
+
+groups:
+- name: website_status
+  rules:
+  - alert: WebsiteStatusChanged
+    expr: http_response_status{job="lms_skillfactory_ru"} != 200
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Website status has changed"
+      description: "Website lms.skillfactory.ru has changed its status code"
+# Для задержки, которая превышает 5 секунд lms.skillfactory.ru:
+Copy code
+groups:
+- name: website_latency
+  rules:
+  - alert: WebsiteLatencyExceeded
+    expr: http_response_duration_seconds{job="lms_skillfactory_ru"} > 5
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Website latency exceeded"
+      description: "Website lms.skillfactory.ru has exceeded the latency threshold of 5 seconds"
+# Для перезагрузки сервера (через метрику Uptime):
+Copy code
+groups:
+- name: server_uptime
+  rules:
+  - alert: ServerRebooted
+    expr: uptime_seconds{job="server"} == 0
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Server rebooted"
+      description: "Server has been rebooted"
